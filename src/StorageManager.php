@@ -13,6 +13,7 @@ namespace Overtrue\LaravelUEditor;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Overtrue\LaravelUEditor\Events\Uploaded;
 use Overtrue\LaravelUEditor\Events\Uploading;
@@ -313,11 +314,11 @@ class StorageManager
         foreach ($prefixes as $prefix) {
             if ($action == $upload[$prefix.'ActionName']) {
                 $config = [
-                    'action' => array_get($upload, $prefix.'ActionName'),
-                    'field_name' => array_get($upload, $prefix.'FieldName'),
-                    'max_size' => array_get($upload, $prefix.'MaxSize'),
-                    'allow_files' => array_get($upload, $prefix.'AllowFiles', []),
-                    'path_format' => array_get($upload, $prefix.'PathFormat'),
+                    'action' => $upload[$prefix.'ActionName'] ?? null,
+                    'field_name' => $upload[$prefix.'FieldName'] ?? null,
+                    'max_size' => $upload[$prefix.'MaxSize'] ?? null,
+                    'allow_files' => $upload[$prefix.'AllowFiles'] ?? [],
+                    'path_format' => $upload[$prefix.'PathFormat'] ?? null,
                 ];
 
                 break;
@@ -359,8 +360,8 @@ class StorageManager
             $path = preg_replace('/\{rand\:[\d]*\}/i', str_pad(mt_rand(0, pow(10, $length) - 1), $length, '0', STR_PAD_LEFT), $path);
         }
 
-        if (!str_contains($path, $filename)) {
-            $path = str_finish($path, '/').$filename;
+        if (!Str::contains($path, $filename)) {
+            $path = Str::finish($path, '/').$filename;
         }
 
         return $path;
